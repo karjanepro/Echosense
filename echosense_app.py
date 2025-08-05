@@ -99,23 +99,26 @@ if input_mode == "📁 Upload Image":
                     output = generation[0][input_len:]
 
                 translation = processor.decode(output, skip_special_tokens=True)
+                st.session_state["translation"] = translation  # Save it
                 st.success(f"🗣️ Translation: **{translation}**")
-
-                if st.button("🔊 Speak it"):
-                    if translation.strip() == "":
-                        st.warning("Please enter some text first.")
-                    else:
-                        try:
-                            # Generate TTS and save to temp file
-                            tts = gTTS(text=translation, lang="en")
-                            file = "C:/users/weshore/echosense/sign.mp3"
-                            tts.save(file)
-                            playsound(file)
-                            time.sleep(50)  # Wait for sound to finish
-                            st.success("🔊 Spoken successfully!")
-                            os.remove(file)
-                        except Exception as e:
-                            st.error(f"Error generating speech: {e}")
+                
+                if "translation" in st.session_state:
+                    if st.button("🔊 Speak it"):
+                        translation = st.session_state["translation"]
+                        if translation.strip() == "":
+                            st.warning("Please enter some text first.")
+                        else:
+                            try:
+                                # Generate TTS and save to temp file
+                                tts = gTTS(text=translation, lang="en")
+                                file = "C:/users/weshore/echosense/sign.mp3"
+                                tts.save(file)
+                                playsound(file)
+                                time.sleep(2)  # Reduce wait time
+                                st.success("🔊 Spoken successfully!")
+                                os.remove(file)
+                            except Exception as e:
+                                st.error(f"Error generating speech: {e}")
 
 elif input_mode == "🔤 Input Text":
     st.subheader("Type Message to Show in Sign Language")
